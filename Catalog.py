@@ -56,9 +56,6 @@ class Catalog:
         self.entries.append(f)
         self.save()
 
-        
-            
-
     def save(self):
         path = os.path.join(self.dir, Catalog.SAVE_NAME)
         print(f"Saving to {path}")
@@ -83,6 +80,7 @@ class Entry:
         self.name = name
         self.artist = artist
         self.composer = composer
+        self.instrument
         self.tags = []
         return
 
