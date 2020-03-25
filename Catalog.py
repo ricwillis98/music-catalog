@@ -75,13 +75,32 @@ class Catalog:
             return pickle.load(f)
 
 
-class Entry: 
-    def __init__(self, name=None, artist="Unknown", composer=None): 
-        self.name = name
-        self.artist = artist
-        self.composer = composer
-        self.instrument
-        self.tags = []
+class EntryBaseClass: 
+    def __init__(self, **kwargs):
+        if 'name' in kwargs.keys():
+            self.name = kwargs['name']
+        else:
+            self.name = 'Unknown'
+
+        if 'artist' in kwargs.keys():
+            self.artist = kwargs['artist']
+        else:
+            self.artist = 'Unknown'
+
+        if 'composer' in kwargs.keys():
+            self.composer = kwargs['composer']
+        else:
+            self.composer = ''
+
+        if 'instrument' in kwargs.keys():
+            self.instrument = kwargs['instrument']
+        else:
+            self.instrument = ''
+
+        if 'tags' in kwargs.keys():
+            self.tags = kwargs['tags']
+        else:
+            self.tags = []
         return
 
     def show(self):
@@ -91,7 +110,7 @@ class Entry:
         out = f"{self.name}\t {self.artist}\t"
         return out
 
-class LinkEntry(Entry):
+class LinkEntry(EntryBaseClass):
     def __init__(self, link, **kwargs):
         super().__init__(**kwargs)
         self.link = link
@@ -100,7 +119,7 @@ class LinkEntry(Entry):
         webbrowser.open(self.link)
         return
 
-class FileEntry(Entry):
+class FileEntry(EntryBaseClass):
     def __init__(self, path, **kwargs):
         super().__init__(**kwargs)
         self.path = path
