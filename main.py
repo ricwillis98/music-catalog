@@ -38,9 +38,16 @@ class CatalogGUI:
         id_int = int(id_str[1:]) - 1
         self.catalog.entries[id_int].show()
 
+    def delete_entry(self, entry):
+        id_str = self.entry_tree.selection()[0]
+        idx = int(id_str[1:]) - 1
+        self.catalog.delete_entry(idx)
+        self.entry_tree.delete(id_str)
+
     def make_tab1(self, tab):
         self.entry_tree = ttk.Treeview(tab, columns=('Artist', 'Genre'))
         self.entry_tree.bind("<Double-1>", self.show_entry)
+        self.entry_tree.bind("<Delete>", self.delete_entry)
         self.entry_tree.heading('Artist', text='Artist')
         self.entry_tree.heading('Genre', text='Genre')
         for i, entry in enumerate(self.catalog.entries):

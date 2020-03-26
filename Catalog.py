@@ -27,6 +27,10 @@ class Catalog:
             os.mkdir(self.dir)
         return
 
+    def delete_entry(self, idx):
+        del self.entries[idx]
+        self.save()
+
     def add_link(self, link, **kwargs):
         l = LinkEntry(link, **kwargs) 
         self.entries.append(l)
