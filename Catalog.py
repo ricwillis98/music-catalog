@@ -37,6 +37,10 @@ class Catalog:
         self.save()
         return l
 
+    def update_entry(self, idx, attr, val):
+        setattr(self.entries[idx], attr, val)
+        self.save()
+
     def add_file(self, path, **kwargs):
         # get artist name
         if 'artist' in kwargs.keys():

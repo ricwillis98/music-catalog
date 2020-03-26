@@ -1,5 +1,7 @@
 from tkinter import *
+import time
 from tkinter import ttk, filedialog
+import tkinter as tk
 from Catalog import *
 
 
@@ -24,8 +26,74 @@ class CatalogGUI:
         file_dropdown = Menu(self.menu)
         file_dropdown.add_command(label='Clear Catalog', command=self.clear)
         file_dropdown.add_command(label='Exit', command=self.exit)
+        edit_dropdown = Menu(self.menu)
+        edit_dropdown.add_command(label='Edit Metadata', command=self.edit_entry)
         self.menu.add_cascade(label='File', menu=file_dropdown)
+        self.menu.add_cascade(label='Edit', menu=edit_dropdown)
         self.master.config(menu=self.menu)
+
+    def edit_entry(self):
+        id_str = self.entry_tree.selection()
+        if id_str == ():
+            return
+        else:
+            idx = int(id_str[0][1:]) - 1
+            entry = self.catalog.entries[idx]
+            window = tk.Toplevel(self.master)
+            
+            name_label = Label(window, text='Name: ')
+            name_label.grid(row=0, column=0)
+
+            self.edit_name = Entry(window)
+            self.edit_name.grid(row=0, column=1)
+            self.edit_name.insert(0, entry.name)
+
+            artist_label = Label(window, text='Artist: ')
+            artist_label.grid(row=1, column=0)
+
+            self.edit_artist = Entry(window)
+            self.edit_artist.grid(row=1, column=1)
+            self.edit_artist.insert(0, entry.artist)
+
+            genre_label = Label(window, text='Genre: ')
+            genre_label.grid(row=2, column=0)
+
+            self.edit_genre = Entry(window)
+            self.edit_genre.grid(row=2, column=1)
+            self.edit_genre.insert(0, entry.genre)
+            
+            cancel_button = Button(window, 
+                                   text='Cancel', 
+                                   command=window.destroy)
+            cancel_button.grid(row=3, column=0)
+
+            apply_button = Button(window, 
+                                  text='Apply',
+                                  command=lambda: self.apply_edit(id_str))
+            apply_button.grid(row=3, column=1)
+
+            save_button = Button(window, 
+                                 text='Save',
+                                 command=lambda: self.save_edit(id_str, window))
+            save_button.grid(row=3, column=2)
+
+    def save_edit(self, id_str, window):
+        self.apply_edit(id_str)
+        window.destroy()
+
+    def apply_edit(self, id_str):
+        idx = int(id_str[0][1:]) - 1
+        name = self.edit_name.get()
+        artist = self.edit_artist.get()
+        genre = self.edit_genre.get()
+
+        self.catalog.update_entry(idx, 'name', name)
+        self.catalog.update_entry(idx, 'artist', artist)
+        self.catalog.update_entry(idx, 'genre', genre)
+
+        self.entry_tree.item(id_str, text=name, values=(artist, genre))
+
+
 
     def choose_file(self):
         f = filedialog.askopenfilename()

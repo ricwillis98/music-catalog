@@ -3,4 +3,3 @@ TODO:
 * Implement ads
 * Implement settings page (font size, instrument)
 * Implement tags
-* Implement edit metadata
