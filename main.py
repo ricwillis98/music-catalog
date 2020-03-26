@@ -1,5 +1,5 @@
 from tkinter import *
-from tkinter import ttk
+from tkinter import ttk, filedialog
 from Catalog import *
 
 
@@ -22,20 +22,38 @@ class CatalogGUI:
         # set up menu
         self.menu = Menu(self.master)
         file_dropdown = Menu(self.menu)
+        file_dropdown.add_command(label='Clear Catalog', command=self.clear)
         file_dropdown.add_command(label='Exit', command=self.exit)
         self.menu.add_cascade(label='File', menu=file_dropdown)
         self.master.config(menu=self.menu)
 
     def choose_file(self):
         f = filedialog.askopenfilename()
+        self.entry_url.delete(0, 'end')
+        self.entry_url.insert(0, f)
+        self.is_file_checkbox.select()
+
+    def show_entry(self, event):
+        id_str = self.entry_tree.selection()[0]
+        id_int = int(id_str[1:]) - 1
+        self.catalog.entries[id_int].show()
 
     def make_tab1(self, tab):
+        self.entry_tree = ttk.Treeview(tab, columns=('Artist', 'Genre'))
+        self.entry_tree.bind("<Double-1>", self.show_entry)
+        self.entry_tree.heading('Artist', text='Artist')
+        self.entry_tree.heading('Genre', text='Genre')
         for i, entry in enumerate(self.catalog.entries):
-            lb = Label(tab, text=entry)
-            lb.grid(row=i)
+            self.insert_into_entry_tree(entry)
+        self.entry_tree.pack()
 
-            bt = Button(tab, text="Show", command=self.catalog.entries[i].show)
-            bt.grid(row=i, column=1)
+    def insert_into_entry_tree(self, entry):
+        self.entry_tree.insert('', 
+                               'end', 
+                               text=entry.name, 
+                               values=(entry.artist,
+                                       entry.genre,
+                                       type(entry)))
 
     def make_tab2(self, tab):
         entry_name_label = Label(tab, text="Song Name: ")
@@ -52,8 +70,15 @@ class CatalogGUI:
         entry_url_label.grid(row=2, column=0)
         self.entry_url = Entry(tab, width=10)
         self.entry_url.grid(row=2, column=1)
+        choose_file_button = Button(tab, text="Browse Files", 
+                                    command=self.choose_file)
+        choose_file_button.grid(row=2, column=2)
 
-        self.submit_button = Button(tab, text="Submit", command=self.add_link)
+        self.is_file = BooleanVar()
+        self.is_file_checkbox = Checkbutton(tab, text="Local File", variable=self.is_file)
+        self.is_file_checkbox.grid(row=2, column=3)
+
+        self.submit_button = Button(tab, text="Submit", command=self.add_entry)
         self.submit_button.grid(row=3, column=1)
 
     def add_link(self):
@@ -61,12 +86,34 @@ class CatalogGUI:
         name = self.entry_name.get()
         url = self.entry_url.get()
         
-        self.catalog.add_link(url, artist=artist, name=name)
-        self.master.refresh()
+        entry = self.catalog.add_link(url, artist=artist, name=name)
+        self.insert_into_entry_tree(entry)
 
+    def add_file(self):
+        artist = self.entry_artist.get()
+        name = self.entry_name.get()
+        path = self.entry_url.get()
+
+        entry = self.catalog.add_file(path, artist=artist, name=name)
+        self.insert_into_entry_tree(entry)
+
+    def add_entry(self):
+        is_file = self.is_file.get()
+        if is_file:
+            self.add_file()
+        else:
+            self.add_link()
+
+        for tf in [self.entry_artist, self.entry_name, self.entry_url]:
+            tf.delete(0, 'end')
+        
 
     def exit(self):
         sys.exit(0)
+
+    def clear(self):
+        shutil.rmtree(self.catalog.dir)
+        self.exit()
 
 if __name__ == '__main__':
     catalog = Catalog.getInstance('./catalog')

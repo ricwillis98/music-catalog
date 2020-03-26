@@ -31,6 +31,7 @@ class Catalog:
         l = LinkEntry(link, **kwargs) 
         self.entries.append(l)
         self.save()
+        return l
 
     def add_file(self, path, **kwargs):
         # get artist name
@@ -55,6 +56,7 @@ class Catalog:
         f = FileEntry(path, **kwargs)
         self.entries.append(f)
         self.save()
+        return f
 
     def save(self):
         path = os.path.join(self.dir, Catalog.SAVE_NAME)
@@ -101,6 +103,11 @@ class EntryBaseClass:
             self.tags = kwargs['tags']
         else:
             self.tags = []
+
+        if 'genre' in kwargs.keys():
+            self.genre = kwargs['genre']
+        else:
+            self.genre = ''
         return
 
     def show(self):
