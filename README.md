@@ -3,3 +3,4 @@ TODO:
 * Implement ads
 * Implement settings page (font size, instrument)
 * Implement tags
+* Implement sync with Ultimate Guitar Tabs
